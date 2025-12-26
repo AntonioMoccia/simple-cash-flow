@@ -6,20 +6,6 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding database...");
 
-  // TempImage
-/*   const tempImages = [];
-  for (let i = 0; i < 5; i++) {
-    tempImages.push(
-      prisma.tempImage.create({
-        data: {
-          key: faker.string.uuid(),
-          url: faker.internet.url(),
-          expireAt: faker.date.future(),
-        },
-      })
-    );
-  } */
-
   // Users
   const users = [];
   for (let i = 0; i < 5; i++) {
@@ -95,67 +81,83 @@ async function main() {
   }
 
   // Categories
-  const categories = [];
-  for (let i = 0; i < 3; i++) {
-    categories.push(
-      prisma.category.create({
-        data: {
-          description: faker.commerce.department(),
-        },
+  const categoryNames = ["Spese fisse", "Alimentazione", "Trasporti"];
+  const categories = categoryNames.map((name) =>
+    prisma.category.create({
+      data: { name },
+    })
+  );
+  const createdCategories = await Promise.all(categories);
+
+  // SubCategories
+  const subCategoriesData = [
+    { name: "Affitto", category: "Spese fisse" },
+    { name: "Mutuo", category: "Spese fisse" },
+    { name: "Ristoranti", category: "Alimentazione" },
+    { name: "Spesa supermercato", category: "Alimentazione" },
+    { name: "Carburante", category: "Trasporti" },
+    { name: "Taxi", category: "Trasporti" },
+  ];
+
+  const subCategories = [];
+  for (const sub of subCategoriesData) {
+    const category = createdCategories.find((c) => c.name === sub.category);
+    subCategories.push(
+      prisma.subCategory.create({
+        data: { name: sub.name },
       })
     );
   }
-  const createdCategories = await Promise.all(categories);
+  const createdSubCategories = await Promise.all(subCategories);
 
+  // Currencies
+  const currenciesData = [
+    { title: "Euro", symbol: "€" },
+    { title: "Dollaro USA", symbol: "$" },
+    { title: "Sterlina UK", symbol: "£" },
+  ];
 
+  const currencies = currenciesData.map((c) =>
+    prisma.currency.create({ data: c })
+  );
+  const createdCurrencies = await Promise.all(currencies);
 
-  // Events & Locations
-  for (let i = 0; i < 5; i++) {
-    const event = await prisma.event.create({
-      data: {
-        userId: createdUsers[faker.number.int({ min: 0, max: createdUsers.length - 1 })].id,
-        title: faker.commerce.productName(),
-        id_category:
-          createdCategories[
-            faker.number.int({ min: 0, max: createdCategories.length - 1 })
-          ].id,
-        organizer: faker.person.fullName(),
-        age: `${faker.number.int({ min: 18, max: 50 })}+`,
-        startAt: faker.date.future(),
-        endAt: faker.date.future(),
-        description: faker.lorem.paragraph(),
-        email: faker.internet.email(),
-        image: faker.image.url(),
-        phone: faker.phone.number(),
-        price: parseFloat(faker.commerce.price()),
-        capacity: faker.number.int({ min: 10, max: 500 }),
-        website: faker.internet.url(),
-      },
-    });
-
-    await prisma.eventLocation.create({
-      data: {
-        eventId: event.id,
-        lat: faker.location.latitude(),
-        lng: faker.location.longitude(),
-        address_name: faker.location.streetAddress(),
-        street: faker.location.street(),
-        city: faker.location.city(),
-        state: faker.location.state(),
-        postalCode: faker.location.zipCode(),
-        country: faker.location.country(),
-        countryCode: faker.location.countryCode(),
-        place_id: faker.string.uuid(),
-        mapUrl: faker.internet.url(),
-        locationNotes: "Ingresso principale",
-      },
-    });
+  // Transactions
+  const transactions = [];
+  for (const user of createdUsers) {
+    for (let i = 0; i < 5; i++) {
+      const subCat =
+        createdSubCategories[
+          faker.number.int({ min: 0, max: createdSubCategories.length - 1 })
+        ];
+      const currency =
+        createdCurrencies[
+          faker.number.int({ min: 0, max: createdCurrencies.length - 1 })
+        ];
+      transactions.push(
+        prisma.transaction.create({
+          data: {
+            id: faker.string.uuid(),
+            userId: user.id,
+            amount: parseFloat(faker.commerce.price()),
+            type: faker.helpers.arrayElement(["INCOME", "EXPENSE"]),
+            subcategoryId: subCat.id,
+            date: faker.date.recent(),
+            note: faker.lorem.sentence(),
+            currencyId: currency.id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        })
+      );
+    }
   }
 
   await Promise.all([
     ...sessions,
     ...accounts,
     ...verifications,
+    ...transactions,
   ]);
 
   console.log("Seeding completed!");

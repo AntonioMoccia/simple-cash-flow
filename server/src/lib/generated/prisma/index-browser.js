@@ -121,13 +121,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.TempImageScalarFieldEnum = {
-  id: 'id',
-  key: 'key',
-  expireAt: 'expireAt',
-  url: 'url'
-};
-
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -135,11 +128,7 @@ exports.Prisma.UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  role: 'role',
-  banned: 'banned',
-  banReason: 'banReason',
-  banExpires: 'banExpires'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
@@ -181,47 +170,33 @@ exports.Prisma.VerificationScalarFieldEnum = {
 
 exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
-  description: 'description'
-};
-
-exports.Prisma.EventScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  id_category: 'id_category',
-  organizer: 'organizer',
-  age: 'age',
-  startAt: 'startAt',
-  endAt: 'endAt',
-  description: 'description',
-  email: 'email',
-  image: 'image',
-  phone: 'phone',
-  price: 'price',
-  capacity: 'capacity',
-  website: 'website',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
+  name: 'name',
   userId: 'userId'
 };
 
-exports.Prisma.EventLocationScalarFieldEnum = {
+exports.Prisma.SubCategoryScalarFieldEnum = {
   id: 'id',
-  eventId: 'eventId',
-  lat: 'lat',
-  lng: 'lng',
-  address_name: 'address_name',
-  street: 'street',
-  city: 'city',
-  state: 'state',
-  postalCode: 'postalCode',
-  country: 'country',
-  countryCode: 'countryCode',
-  place_id: 'place_id',
-  mapUrl: 'mapUrl',
-  locationNotes: 'locationNotes',
+  name: 'name',
+  userId: 'userId'
+};
+
+exports.Prisma.TransactionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  amount: 'amount',
+  type: 'type',
+  subcategoryId: 'subcategoryId',
+  date: 'date',
+  note: 'note',
+  currencyId: 'currencyId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CurrencyScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  symbol: 'symbol'
 };
 
 exports.Prisma.SortOrder = {
@@ -238,27 +213,20 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.UserRole = exports.$Enums.UserRole = {
-  user: 'user',
-  admin: 'admin'
-};
-
-exports.EventStatus = exports.$Enums.EventStatus = {
-  pending: 'pending',
-  approved: 'approved',
-  rejected: 'rejected',
-  deleted: 'deleted'
+exports.TransactionType = exports.$Enums.TransactionType = {
+  INCOME: 'INCOME',
+  EXPENSE: 'EXPENSE'
 };
 
 exports.Prisma.ModelName = {
-  TempImage: 'TempImage',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
   Category: 'Category',
-  Event: 'Event',
-  EventLocation: 'EventLocation'
+  SubCategory: 'SubCategory',
+  Transaction: 'Transaction',
+  Currency: 'Currency'
 };
 
 /**

@@ -7,10 +7,9 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 
 //routers
-import googleRouter from "@routes/google.route";
-import eventRouter from "@routes/event.route";
-import categoryRouter from "@/routes/category.route";
-import eventTypeRouter from "@/routes/event_type.route";
+
+import {routes} from "@routes/index.route";
+
 
 //middelwares
 import cors from "cors";
@@ -29,10 +28,9 @@ app.all("/api/auth/*", toNodeHandler(auth.handler));
 
 app.use(express.json());
 
-app.use("/api/google", googleRouter);
-app.use("/api/eventS", eventRouter);
-app.use("/api/category", categoryRouter);
-app.use("/api/event_type", eventTypeRouter);
+app.use("/api/v1/categories", routes.v1.categories);
+app.use("/api/v1/users", routes.v1.users);
+
 
 app.get("/", (req: Request, res: Response) => {
   res.send("hello world");

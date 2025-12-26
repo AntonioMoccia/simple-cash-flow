@@ -1,5 +1,5 @@
 import { CategoryService } from "@/services/category.service";
-import { Category } from "@/types/index";
+import { ICategory } from "@/types/index";
 import { success } from "@/lib/send-success";
 import { NextFunction, Request, Response } from "express";
 
@@ -10,10 +10,13 @@ export class CategoryController {
     this.categoryService = new CategoryService();
   }
   async creteCategory(req: Request, res: Response, next: NextFunction) {
-    const { description }: Category = req.body;
-   
+    const { name }: ICategory = req.body;
+    const userId = req.user?.id
     try {
-      const newCategory = await this.categoryService.create({ description });
+      const newCategory = await this.categoryService.create({ 
+        name:name,
+        userId: userId || "null"
+       });
 
       success(res, {
         category: newCategory,

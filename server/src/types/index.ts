@@ -1,63 +1,13 @@
-import { EventStatus } from "@lib/generated/prisma";
 import { InferUser } from "better-auth";
 import { auth } from "@lib/auth";
+import { Transaction, SubCategory, Category, Currency } from "@lib/generated/prisma";
 
-export type Event = {
-  title: string;
-  id_category: string;
-  description: string;
-  startAt?: Date;
-  endAt?: Date;
-  image?: string;
-  price: number;
-  age?: string;
-  email?: string;
-  phone?: string;
-  website: string;
-  organizer: string;
-  location: Location;
-  capacity?: number;
-  userId?:string;
-};
+type TypeModel<T, K extends keyof any> = Omit<T, K>;
 
-export type Location = {
-  address_name: string;
-  lat: number;
-  lng: number;
-  place_id?: string;
-};
-export type Category = {
-  description: string;
-};
-export type EventType = {
-  description: string;
-};
-
-export type FilterTypes = {
-  category?: string;
-  startDate?: string;
-  lat?: string;
-  lng?: string;
-  radius?: string; // in km
-  page?: number;
-  limit?: number;
-  status?: EventStatus;
-  mine?: boolean;
-  search?:string
-};
-
-export type Filters = {
-  id_category?: string;
-  startAt?: { gte: Date };
-  location?: {
-    lat: number;
-    lng: number;
-    radius: number; // in km
-  };
-  status?: EventStatus;
-  userId?: string;
-  title?: { contains: string; mode: "insensitive" };
-};
+export type ITransaction = TypeModel<Transaction, "id">;
+export type ICategory = TypeModel<Category, "id">;
+export type ISubCategory = TypeModel<SubCategory, "id">;
+export type ICurrency = TypeModel<Currency, "id">;
 
 export type User = InferUser<typeof auth>;
 declare global {

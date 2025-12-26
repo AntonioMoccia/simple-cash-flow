@@ -1,4 +1,4 @@
-import {
+/* import {
   PutObjectCommand,
   S3Client,
   DeleteObjectCommand,
@@ -95,3 +95,4 @@ class S3 {
 }
 
 export default S3;
+ */

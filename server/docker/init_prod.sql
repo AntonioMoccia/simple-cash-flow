@@ -1,1 +1,1 @@
-CREATE DATABASE next_event;
+CREATE DATABASE simple_cash_flow;
