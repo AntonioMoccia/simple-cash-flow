@@ -1,0 +1,16 @@
+
+parlaci del tuo evento
+
+image
+titolo
+        categoria
+descrizione
+tipo di evento (a pagamento, gratuito)
+età
+
+        dicci dove e quando
+
+        data e ora inizio
+        data e ora fine
+        Luogo 
+        contatti

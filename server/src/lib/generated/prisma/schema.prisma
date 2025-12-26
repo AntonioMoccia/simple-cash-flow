@@ -1,0 +1,171 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TempImage {
+  id       String   @id @default(uuid())
+  key      String   @unique
+  expireAt DateTime
+  url      String   @unique
+
+  @@map("tempImage")
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  events        Event[]
+  role          UserRole? @default(user)
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Category {
+  id          String  @id @default(uuid())
+  description String
+  events      Event[]
+
+  @@map("category")
+}
+
+model Event {
+  id          String         @id @default(uuid())
+  title       String
+  id_category String
+  category    Category       @relation(fields: [id_category], references: [id], onDelete: NoAction)
+  organizer   String
+  age         String?
+  startAt     DateTime       @default(now())
+  endAt       DateTime?
+  description String
+  email       String?
+  image       String
+  phone       String?
+  price       Float
+  capacity    Int?
+  website     String?
+  status      EventStatus    @default(pending)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  location    EventLocation?
+  userId      String?
+  user        User?          @relation(fields: [userId], references: [id], onDelete: NoAction)
+
+  @@map("event")
+}
+
+model EventLocation {
+  id      String @id @default(cuid())
+  eventId String @unique
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  // Coordinate
+  lat Float
+  lng Float
+
+  // Indirizzo completo
+  address_name String
+
+  // Campi strutturati
+  street      String?
+  city        String?
+  state       String?
+  postalCode  String?
+  country     String?
+  countryCode String?
+
+  // Google-specific
+  place_id      String?
+  mapUrl        String?
+  locationNotes String? // es: "interno 2", "presso ingresso blu"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("event_location")
+}
+
+enum EventStatus {
+  pending
+  approved
+  rejected
+  deleted
+}
+
+enum UserRole {
+  user
+  admin
+}
